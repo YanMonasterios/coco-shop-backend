@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password       String
+  name           String
+  role           Role      @default(VIEWER)
+  mustChangePass Boolean   @default(true)
+  
+  // Seguridad: Bloqueo
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ProductType {
+  id        Int       @id @default(autoincrement())
+  name      String
+  products  Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  expiration  DateTime
+  createdAt   DateTime    @default(now())
+  
+  typeId      Int
+  type        ProductType @relation(fields: [typeId], references: [id])
+}
