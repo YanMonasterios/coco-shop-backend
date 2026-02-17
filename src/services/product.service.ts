@@ -17,4 +17,10 @@ export class ProductService {
       }
     });
   }
+
+  static async delete(id: number) {
+    return prisma.product.delete({
+      where: { id }
+    });
+  }
 }
